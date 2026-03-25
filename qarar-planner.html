@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Qarar | Delivery Operations Planner</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --dark-blue:    #01426A;
+    --medium-blue:  #256BA2;
+    --light-blue:   #009EDA;
+    --black:        #111821;
+    --white:        #FFFFFF;
+    --purple:       #484AB6;
+    --green:        #009A17;
+    --neon:         #00FFC2;
+    --yellow:       #FCBA63;
+    --red:          #D3001F;
+    --orange:       #D77841;
+    --silver:       #288C78;
+    --bg:           #F4F6F9;
+    --card-radius:  16px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--black);
+    min-height: 100vh;
+  }
+
+  /* ─── TOP BAR ─── */
+  .topbar {
+    background: var(--dark-blue);
+    padding: 0 48px;
+    height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 20px rgba(0,0,0,.25);
+  }
+
+  .topbar-logo svg { height: 38px; width: auto; }
+  /* Override logo gradient colors for dark bg — keep the icon, change text to white */
+  .topbar-logo .cls-2 { fill: #FFFFFF !important; }
+
+  .topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .teams-badge {
+    background: rgba(255,255,255,0.10);
+    border: 1px solid rgba(255,255,255,0.20);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .5px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    text-decoration: none;
+    transition: background .2s;
+  }
+  .teams-badge:hover { background: rgba(255,255,255,0.18); }
+  .teams-badge .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--neon); }
+
+  /* ─── HERO ─── */
+  .hero {
+    background: linear-gradient(135deg, var(--dark-blue) 0%, var(--medium-blue) 100%);
+    padding: 64px 48px 56px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    right: -80px; top: -80px;
+    width: 420px; height: 420px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.04);
+    pointer-events: none;
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    left: 40%; bottom: -120px;
+    width: 320px; height: 320px;
+    border-radius: 50%;
+    background: rgba(0,158,218,0.12);
+    pointer-events: none;
+  }
+  .hero-inner { max-width: 780px; position: relative; z-index: 1; }
+
+  .hero-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,255,255,0.10);
+    border: 1px solid rgba(255,255,255,0.18);
+    padding: 5px 14px;
+    border-radius: 20px;
+    color: var(--light-blue);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 22px;
+  }
+
+  .hero h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(28px, 4vw, 44px);
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.15;
+    margin-bottom: 18px;
+  }
+
+  .hero-sub {
+    font-size: 15px;
+    line-height: 1.7;
+    color: rgba(255,255,255,0.75);
+    max-width: 600px;
+    margin-bottom: 32px;
+  }
+
+  .hero-notice {
+    background: rgba(255,255,255,0.08);
+    border-left: 3px solid var(--neon);
+    border-radius: 0 10px 10px 0;
+    padding: 14px 20px;
+    color: rgba(255,255,255,0.85);
+    font-size: 13.5px;
+    line-height: 1.6;
+    max-width: 620px;
+  }
+  .hero-notice strong { color: var(--neon); font-weight: 600; }
+
+  /* ─── MAIN GRID ─── */
+  .main {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 48px 32px 80px;
+  }
+
+  .section-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--medium-blue);
+    margin-bottom: 20px;
+    margin-top: 40px;
+  }
+
+  /* ─── OPS ISSUES — FEATURED ─── */
+  .ops-card {
+    background: linear-gradient(120deg, #9a0016 0%, var(--red) 60%, #ff2a45 100%);
+    border-radius: var(--card-radius);
+    padding: 36px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    cursor: pointer;
+    text-decoration: none;
+    position: relative;
+    overflow: hidden;
+    transition: transform .22s, box-shadow .22s;
+    box-shadow: 0 8px 32px rgba(211,0,31,0.30);
+    margin-bottom: 40px;
+  }
+  .ops-card::before {
+    content: '';
+    position: absolute;
+    right: -40px; top: -40px;
+    width: 220px; height: 220px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 50%;
+  }
+  .ops-card:hover { transform: translateY(-3px); box-shadow: 0 16px 48px rgba(211,0,31,0.40); }
+
+  .ops-left { position: relative; z-index: 1; }
+  .ops-tag {
+    display: inline-block;
+    background: rgba(255,255,255,0.18);
+    border: 1px solid rgba(255,255,255,0.30);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #fff;
+    margin-bottom: 12px;
+  }
+  .ops-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 8px;
+  }
+  .ops-desc {
+    font-size: 14px;
+    color: rgba(255,255,255,0.78);
+    line-height: 1.6;
+  }
+  .ops-pills {
+    display: flex;
+    gap: 8px;
+    margin-top: 14px;
+    flex-wrap: wrap;
+  }
+  .pill {
+    background: rgba(255,255,255,0.14);
+    border: 1px solid rgba(255,255,255,0.22);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 4px 12px;
+    border-radius: 12px;
+  }
+  .ops-arrow {
+    font-size: 28px;
+    color: rgba(255,255,255,0.5);
+    position: relative;
+    z-index: 1;
+    transition: transform .2s, color .2s;
+  }
+  .ops-card:hover .ops-arrow { transform: translateX(6px); color: #fff; }
+
+  /* ─── PROJECT GRID ─── */
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+  }
+
+  .project-card {
+    background: #fff;
+    border-radius: var(--card-radius);
+    overflow: hidden;
+    cursor: pointer;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    transition: transform .22s, box-shadow .22s;
+    box-shadow: 0 2px 12px rgba(0,0,0,.06);
+  }
+  .project-card:hover { transform: translateY(-4px); box-shadow: 0 12px 36px rgba(0,0,0,.13); }
+
+  .card-accent {
+    height: 6px;
+    width: 100%;
+  }
+  .card-body {
+    padding: 24px 26px 22px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .card-tag {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #aaa;
+    margin-bottom: 2px;
+  }
+  .card-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--black);
+    line-height: 1.25;
+  }
+  .card-desc {
+    font-size: 13px;
+    color: #666;
+    line-height: 1.6;
+    margin-top: 4px;
+  }
+  .card-footer {
+    padding: 14px 26px;
+    border-top: 1px solid #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .card-link-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #888;
+  }
+  .card-arrow {
+    font-size: 18px;
+    transition: transform .2s;
+  }
+  .project-card:hover .card-arrow { transform: translateX(4px); }
+
+  /* ─── SHARED FOLDER ─── */
+  .shared-card {
+    background: var(--black);
+    border-radius: var(--card-radius);
+    padding: 30px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: transform .22s, box-shadow .22s;
+    box-shadow: 0 4px 24px rgba(0,0,0,.18);
+    margin-bottom: 40px;
+  }
+  .shared-card:hover { transform: translateY(-2px); box-shadow: 0 10px 36px rgba(0,0,0,.28); }
+  .shared-left { display: flex; align-items: center; gap: 18px; }
+  .shared-icon {
+    width: 52px; height: 52px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px;
+    flex-shrink: 0;
+  }
+  .shared-info {}
+  .shared-tag {
+    font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
+    text-transform: uppercase; color: var(--neon); margin-bottom: 4px;
+  }
+  .shared-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 20px; font-weight: 700; color: #fff;
+  }
+  .shared-desc { font-size: 13px; color: rgba(255,255,255,0.55); margin-top: 3px; }
+  .shared-arrow { font-size: 22px; color: rgba(255,255,255,0.4); transition: transform .2s, color .2s; }
+  .shared-card:hover .shared-arrow { transform: translateX(6px); color: #fff; }
+
+  /* ─── FOOTER ─── */
+  .footer {
+    text-align: center;
+    padding: 28px 32px;
+    font-size: 12px;
+    color: #aaa;
+    border-top: 1px solid #e4e4e4;
+  }
+  .footer strong { color: var(--medium-blue); }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<header class="topbar">
+  <div class="topbar-logo">
+    <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 487.31 191.33">
+      <defs>
+        <style>.cls-1{fill:url(#linear-gradient)}.cls-2{fill:#FFFFFF}</style>
+        <linearGradient id="linear-gradient" x1="271.88" y1="26.95" x2="15.99" y2="174.69" gradientTransform="translate(-7.25 1.54) rotate(-.19)" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stop-color="#00a1e0"/>
+          <stop offset=".4" stop-color="#00a1e0"/>
+          <stop offset=".9" stop-color="#006d9a"/>
+        </linearGradient>
+      </defs>
+      <path class="cls-1" d="M257.26,60.15c.75,4.49-1.97,8.83-6.36,10.1,0,0-.26.07-.4.1l-1.69.4c-.66.15-1.33.23-2,.24-4.2.01-7.8-2.85-8.76-6.97-1.08-4.68,1.66-9.38,6.24-10.71.15-.04.3-.08.46-.12.17-.04.37-.08.54-.11l1.7-.29c.48-.08.96-.12,1.44-.12,4.38-.01,8.08,3.13,8.81,7.48ZM281.45,57.56c-.55-3.98-3.96-6.96-7.95-6.95-.36,0-.72.03-1.07.08l-1.63.23c-.17.02-.35.05-.51.09l-.25.05c-4.26,1.04-6.9,5.21-6.03,9.5.43,2.12,1.65,3.95,3.44,5.14,1.33.89,2.87,1.36,4.46,1.35.53,0,1.07-.06,1.59-.17l1.82-.38c4.08-.99,6.68-4.83,6.12-8.95ZM172.08,88.76c21.93-6.78,39.81-11.63,51.18-14.56.3-.09.55-.16.79-.25,4.41-1.58,6.82-6.39,5.5-10.94-1.1-3.79-4.59-6.43-8.48-6.41-.41,0-.82.03-1.22.09-18.54,2.76-37.68,7.16-56.95,13.1,8.35-23.08,16.02-44.67,22.8-64.23l.21-.62c.55-1.62-.11-3.4-1.59-4.24l-.45-.25C183.35.15,182.76,0,182.16,0c-1.08,0-2.11.52-2.76,1.39-14.21,17.95-27.72,41.6-39.12,68.45-25.26-13.45-50.21-23.14-72.25-28.05l-.32-.07c-.25-.05-.51-.08-.77-.08-1.35,0-2.61.74-3.3,1.91-1.07,1.82-.49,4.21,1.3,5.31l20.34,12.64c13.32,8.12,25.91,15.77,37.5,22.77C56.77,111.44,13.73,144.8,1.96,154.51c-1.13.93-1.84,2.31-1.94,3.79-.1,1.48.41,2.95,1.4,4.04,1.01,1.11,2.44,1.74,3.93,1.73,1.03,0,2.04-.31,2.9-.89,23.65-15.72,61.35-38.88,115.5-58.33,1.34-.48,2.68-.96,4.02-1.43-9.29,28.85-14.85,57.61-15.7,81.36v.3c-.05,1.67.95,3.18,2.5,3.76.44.16.89.25,1.35.24,1.59,0,2.99-.98,3.57-2.48l8.64-22.53c8.14-21.75,15.94-42.79,23.22-62.59,29.37,17.61,55.5,33,77.68,45.78l.52.3c.55.32,1.17.49,1.8.48,1,0,1.96-.43,2.64-1.17l.18-.2c1.28-1.41,1.29-3.53.02-4.95-15.5-18.08-36.93-36.35-62.1-52.96Z"/>
+      <g>
+        <path class="cls-2" d="M307.84,177.45l.09-.13c1.7-2.49,3.06-5.72,4.03-9.58.97-3.85,1.46-7.84,1.46-11.87,0-7.4-1.52-13.01-4.52-16.69-3.03-3.71-7.69-5.6-13.86-5.6-4.63,0-9.23,1.17-13.67,3.48l-.13.07-.09.13c-1.7,2.49-3.06,5.72-4.03,9.58-.97,3.84-1.46,7.84-1.46,11.87,0,6.84,1.29,12.15,3.83,15.8,2.55,3.65,6.47,5.78,11.67,6.34,5.58,4.6,11.73,8.06,18.26,10.29l.56.19,2.64-7.01-.67-.16c-3.83-.91-7.43-2.27-10.72-4.05,2.11-.58,4.29-1.45,6.48-2.59l.13-.07ZM302.65,172.21c-2.56,1.04-5.29,1.57-8.12,1.57-3.92,0-6.67-1.17-8.4-3.57-1.75-2.43-2.64-6.47-2.64-12,0-6.18.98-11.51,2.91-15.84,2.56-1.04,5.29-1.57,8.12-1.57,3.86,0,6.69,1.2,8.4,3.57,1.75,2.43,2.64,6.47,2.64,12,0,6.18-.98,11.51-2.91,15.84Z"/>
+        <path class="cls-2" d="M334.09,134.59l-15.63,45.46h7.42l4.38-12.96h15.53l4.32,12.96h8.04l-15.5-45.46h-8.56ZM332.55,160.38l5.54-16.34,5.48,16.34h-11.02Z"/>
+        <path class="cls-2" d="M393.92,158.18l.12-.1.06-.15c1.61-3.85,2.43-7.61,2.43-11.17,0-3.74-1.15-6.73-3.41-8.91-2.26-2.17-5.82-3.27-10.59-3.27h-16.31v45.46h7.6v-18.14h4.09c.98,0,2.23-.04,3.71-.11l9.76,18.25h7.98v-1.39l-9.92-18.27c1.93-.64,3.44-1.39,4.5-2.22ZM387.99,154.12c-2.1.67-5.22,1.01-9.28,1.01h-4.9v-13.71h7.72c2.61,0,4.52.63,5.69,1.86,1.19,1.27,1.78,2.9,1.78,4.99,0,1.82-.34,3.78-1,5.84Z"/>
+        <path class="cls-2" d="M420.96,134.59l-15.63,45.46h7.42l4.38-12.96h15.53l4.32,12.96h8.04l-15.5-45.46h-8.56ZM419.42,160.38l5.54-16.34,5.48,16.34h-11.02Z"/>
+        <path class="cls-2" d="M480.79,158.18l.12-.1.06-.15c1.61-3.85,2.43-7.61,2.43-11.17,0-3.74-1.15-6.73-3.41-8.91-2.26-2.17-5.82-3.27-10.59-3.27h-16.31v45.46h7.6v-18.14h4.09c.98,0,2.23-.04,3.71-.11l9.76,18.25h7.98v-1.39l-9.92-18.27c1.93-.64,3.44-1.39,4.5-2.22ZM474.86,154.12c-2.1.67-5.22,1.01-9.28,1.01h-4.9v-13.71h7.72c2.61,0,4.52.63,5.69,1.86,1.19,1.27,1.78,2.9,1.78,4.99,0,1.82-.34,3.78-1,5.84Z"/>
+        <path class="cls-2" d="M277.21,124.94c1.74.82,3.57,1.24,5.45,1.24,8.76,0,13.21-5.75,13.21-17.08v-24.56h-7.37v25.74c0,2.9-.47,4.97-1.4,6.17-.9,1.17-2.26,1.74-4.16,1.74-2.19,0-4.18-.27-5.91-.8l-.32-.1-1,.86,1.23,6.67.28.13Z"/>
+        <rect class="cls-2" x="304.97" y="58.08" width="7.44" height="53.14"/>
+        <path class="cls-2" d="M387.97,111.22h97.69l.11-.47c1.02-4.46,1.54-9.37,1.54-14.6,0-3.55-.51-6.99-1.52-10.22-1.02-3.26-2.59-6.03-4.67-8.23-2.14-2.26-4.67-3.41-7.5-3.41-3.57,0-6.71,1.99-9.33,5.91-2.56,3.83-4.14,8.38-4.7,13.53l-.03.31.24.21c5.09,4.45,11.98,6.72,20.49,6.73-.01.56-.04,1.22-.09,1.97h-138.11c-2.67,0-4.86-.43-6.53-1.28v-17.14h-7.37v25.74c0,2.9-.47,4.97-1.4,6.17-.9,1.17-2.26,1.74-4.16,1.74-2.19,0-4.18-.27-5.91-.8l-.32-.1-1,.86,1.23,6.67.28.13c1.74.82,3.57,1.24,5.45,1.24,8.76,0,13.21-5.75,13.21-17.08v-.2c2.28,1.55,4.45,2.33,6.46,2.33h45.97ZM479.4,93.75c-5.57,0-9.87-1.05-12.79-3.13.5-2.22,1.37-4.11,2.6-5.63,1.23-1.53,2.51-2.3,3.79-2.3,1.81,0,3.32,1.07,4.6,3.27,1.24,2.14,2.07,4.76,2.47,7.79-.22,0-.45,0-.67,0Z"/>
+        <polygon class="cls-2" points="472.64 65.84 476.72 70.68 483.4 65.13 478.12 58.87 472.38 63.65 468.29 58.8 461.61 64.36 466.97 70.61 472.64 65.84"/>
+      </g>
+    </svg>
+  </div>
+  <div class="topbar-right">
+    <a href="https://teams.microsoft.com" class="teams-badge" target="_blank">
+      <span class="dot"></span>
+      00. Planner Channel &nbsp;|&nbsp; 01. Delivery Operations
+    </a>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-eyebrow">
+      <span>◈</span> 01. Delivery Operations
+    </div>
+    <h1>Team Planner Hub</h1>
+    <p class="hero-sub">
+      Welcome to the official Delivery Operations Planner. All active projects, channels, and shared resources are organized below. Click any card to navigate directly to its workspace.
+    </p>
+    <div class="hero-notice">
+      <strong>📌 Important:</strong> Any file or document related to a specific project must be uploaded to its dedicated Teams channel —
+      <strong>00. Planner Channel | 01. Delivery Operations</strong>. The Shared Folder is reserved for general planning materials only.
+    </div>
+  </div>
+</section>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- SHARED FOLDER -->
+  <p class="section-label">General Resources</p>
+  <a href="https://teams.microsoft.com" class="shared-card" target="_blank">
+    <div class="shared-left">
+      <div class="shared-icon">📂</div>
+      <div class="shared-info">
+        <div class="shared-tag">Shared Folder</div>
+        <div class="shared-title">General Planning Files</div>
+        <div class="shared-desc">Shared documents, templates, and planning materials accessible by the full team</div>
+      </div>
+    </div>
+    <div class="shared-arrow">→</div>
+  </a>
+
+  <!-- OPERATIONS ISSUES — FEATURED -->
+  <p class="section-label">Priority Section</p>
+  <a href="https://teams.microsoft.com" class="ops-card" target="_blank">
+    <div class="ops-left">
+      <div class="ops-tag">⚑ Standalone Section</div>
+      <div class="ops-title">Operations Issues</div>
+      <div class="ops-desc">Dedicated tracking for all operational blockers — internal escalations and SIMAH-related issues.</div>
+      <div class="ops-pills">
+        <span class="pill">SIMAH Issues</span>
+        <span class="pill">Internal Issues</span>
+      </div>
+    </div>
+    <div class="ops-arrow">→</div>
+  </a>
+
+  <!-- PROJECTS -->
+  <p class="section-label">Active Projects</p>
+  <div class="projects-grid">
+
+    <!-- STC BANK -->
+    <a href="https://teams.microsoft.com" class="project-card" target="_blank">
+      <div class="card-accent" style="background: var(--medium-blue);"></div>
+      <div class="card-body">
+        <div class="card-tag">Banking</div>
+        <div class="card-title">STC Bank</div>
+        <div class="card-desc">Main project channel for STC Bank deliverables and coordination.</div>
+      </div>
+      <div class="card-footer">
+        <span class="card-link-label">Open in Teams</span>
+        <span class="card-arrow" style="color:var(--medium-blue);">→</span>
+      </div>
+    </a>
+
+    <!-- BAB MAIN CONTRACT -->
+    <a href="https://teams.microsoft.com" class="project-card" target="_blank">
+      <div class="card-accent" style="background: var(--dark-blue);"></div>
+      <div class="card-body">
+        <div class="card-tag">Main Contract</div>
+        <div class="card-title">BAB Main Contract</div>
+        <div class="card-desc">Full contract scope management and delivery tracking for BAB.</div>
+      </div>
+      <div class="card-footer">
+        <span class="card-link-label">Open in Teams</span>
+        <span class="card-arrow" style="color:var(--dark-blue);">→</span>
+      </div>
+    </a>
+
+    <!-- GIB -->
+    <a href="https://teams.microsoft.com" class="project-card" target="_blank">
+      <div class="card-accent" style="background: var(--purple);"></div>
+      <div class="card-body">
+        <div class="card-tag">Banking</div>
+        <div class="card-title">GIB</div>
+        <div class="card-desc">Gulf International Bank — project workspace and deliverable management.</div>
+      </div>
+      <div class="card-footer">
+        <span class="card-link-label">Open in Teams</span>
+        <span class="card-arrow" style="color:var(--purple);">→</span>
+      </div>
+    </a>
+
+    <!-- EMKAN -->
+    <a href="https://teams.microsoft.com" class="project-card" target="_blank">
+      <div class="card-accent" style="background: var(--light-blue);"></div>
+      <div class="card-body">
+        <div class="card-tag">Finance</div>
+        <div class="card-title">Emkan</div>
+        <div class="card-desc">Emkan Finance — project tracking and delivery coordination channel.</div>
+      </div>
+      <div class="card-footer">
+        <span class="card-link-label">Open in Teams</span>
+        <span class="card-arrow" style="color:var(--light-blue);">→</span>
+      </div>
+    </a>
+
+    <!-- RETAIL FINANCE CLUSTER -->
+    <a href="https://teams.microsoft.com" class="project-card" target="_blank" style="grid-column: span 2;">
+      <div class="card-accent" style="background: linear-gradient(90deg, var(--orange), var(--yellow));"></div>
+      <div class="card-body">
+        <div class="card-tag">Retail Finance Cluster</div>
+        <div class="card-title">BSF · Tamweel · Tasheel</div>
+        <div class="card-desc">Consolidated workspace for retail finance projects and small change orders (SCOs) across BSF, Tamweel, and Tasheel.</div>
+      </div>
+      <div class="card-footer">
+        <span class="card-link-label">Open in Teams</span>
+        <span class="card-arrow" style="color:var(--orange);">→</span>
+      </div>
+    </a>
+
+  </div>
+</main>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <strong>Qarar</strong> &nbsp;·&nbsp; Delivery Operations &nbsp;·&nbsp; Internal Use Only
+</footer>
+
+</body>
+</html>
